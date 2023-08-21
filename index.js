@@ -12,7 +12,7 @@ import { checkAuth, handleErrors } from './utils/index.js';
 import { UserController, PostController } from './controllers/index.js';
 
 mongoose
-  .connect(process.env.MONGODB_URL)
+  .connect('mongodb+srv://novikovisergeevich:123@cluster0.osefsfh.mongodb.net/blog?retryWrites=true&w=majority')
   .then(() => {
     console.log('DB ok');
   })
