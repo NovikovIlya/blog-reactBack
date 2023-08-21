@@ -6,15 +6,13 @@ import {
   registerValidation,
   postCreateValidation,
 } from './validations/validations.js';
-import cors from 'cors'
+import cors from 'cors';
 
 import { checkAuth, handleErrors } from './utils/index.js';
 import { UserController, PostController } from './controllers/index.js';
 
 mongoose
-  .connect(
-    'mongodb+srv://novikovisergeevich:123@cluster0.osefsfh.mongodb.net/blog?retryWrites=true&w=majority',
-  )
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log('DB ok');
   })
@@ -37,7 +35,7 @@ const upload = multer({ storage });
 
 //Позволяет читать json в запросах
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 app.use('/uploads', express.static('uploads'));
 
 app.get('/', (req, res) => {
@@ -46,7 +44,7 @@ app.get('/', (req, res) => {
 
 app.post('/auth/login', loginValidation, handleErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleErrors, UserController.register);
-app.get('/auth/me',checkAuth, UserController.getMe);
+app.get('/auth/me', checkAuth, UserController.getMe);
 
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   res.json({
@@ -54,16 +52,14 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   });
 });
 
-app.get('/tags',PostController.getLastTags)
-app.get('/posts/tags', PostController.getLastTags); 
+app.get('/tags', PostController.getLastTags);
+app.get('/posts/tags', PostController.getLastTags);
 
 app.get('/posts', PostController.getAll);
 app.get('/posts/:id', PostController.getOne);
 app.post('/posts', checkAuth, postCreateValidation, handleErrors, PostController.create);
 app.delete('/posts/:id', checkAuth, PostController.remove);
 app.patch('/posts/:id', checkAuth, postCreateValidation, handleErrors, PostController.update);
-
-
 
 app.listen(4444, (err) => {
   if (err) {
